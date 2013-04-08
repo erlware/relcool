@@ -75,13 +75,16 @@ ct: compile clean-common-test-data
 test: compile eunit ct
 
 $(DEPS_PLT):
-	@echo Building local plt at $(DEPS_PLT)
+	@echo Building local erts plt at $(DEPS_PLT)
 	@echo
 	dialyzer --output_plt $(DEPS_PLT) --build_plt \
-	   --apps erts kernel stdlib -r deps
+	   --apps erts kernel stdlib
+	dialyzer --add_to_plt --plt $(DEPS_PLT)  \
+	    -r deps
 
 dialyzer: $(DEPS_PLT)
-	dialyzer --fullpath --plt $(DEPS_PLT) -I include -Wrace_conditions -r ./ebin
+	dialyzer --fullpath --plt $(DEPS_PLT) \
+		 -I include -Wrace_conditions -r ./ebin
 
 typer:
 	typer --plt $(DEPS_PLT) -r ./src
